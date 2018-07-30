@@ -1,6 +1,3 @@
-/**
- * Created by aayusharora on 7/9/18.
- */
 const server = require('express');
 const app = server();
 
