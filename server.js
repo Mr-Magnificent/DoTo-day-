@@ -1,6 +1,8 @@
 const server = require('express');
 const app = server();
 
+let usercount = 0;
+
 
 const bodyParser = require('body-parser');
 
@@ -29,6 +31,13 @@ app.use(bodyParser.json());
 * */
 // var todoList = [];
 
+app.get('/newuser', function (req, res) {
+    db.insertNewUser(++usercount);
+    res.cookie("userID", usercount, {
+        expires: new Date(2147483647000), httpOnly: true
+    });
+    res.send(usercount);
+});
 
 app.post('/add', function(req,res) {
     let todo = req.body.todo.task;

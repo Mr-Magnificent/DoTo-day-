@@ -4,7 +4,31 @@ let result = $('#list');
 let inp = $('#inp');
 // let ind = 0;
 $(document).ready(function(){
+    (function () {
+        let temp = Cookies.get('userID');
+        if (!temp) {
+            let res = prompt("Are you a new user (y/n)");
+            if (res[0].toLowerCase() === 'y') {
+                $.ajax({
+                    url: '/newuser',
+                    method: 'get',
+                    success: function (data) {
+                        $('#userid').text(`${data}`);
+                    }
+                })
+            }
+            else {
+                let userid;
+                while (!userid) {
+                    userid = prompt("Enter you UserID");
+                }
 
+                if (userid) {
+                    Cookies.set('userID', userid);
+                }
+            }
+        }
+    }());
 
     // let btn = $('#btn');
     display();
