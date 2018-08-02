@@ -71,15 +71,7 @@ function updateElement(userID, task, newTask, callback) {
 
 function deleteMul(userID, taskArr) {
     taskArr.forEach(function (task) {
-        collection.updateOne(
-            {userId: userID},
-            {
-                $unset:
-                    {
-                        [task]: ""
-                    }
-            }
-        )
+        collection.updateOne({ "user.userId": userID}, { $unset: { [task]: ""}});
     })
 }
 

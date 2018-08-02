@@ -1,5 +1,6 @@
 let todoList;
 let delMul = [];
+let taskArr = [];
 let result = $('#list');
 let inp = $('#inp');
 // let userID;
@@ -7,7 +8,8 @@ let inp = $('#inp');
 $(document).ready(function(){
 
     (function () {
-        userID = Cookies.get('userID');
+        let userID = Cookies.get('userID');
+        console.log(userID);
         if (!userID) {
             let res = prompt("Are you a new user (y/n)");
             if (res[0].toLowerCase() === 'y') {
@@ -27,9 +29,9 @@ $(document).ready(function(){
                 while (!userid) {
                     userid = prompt("Enter you UserID");
                 }
-                userid = parseInt(userid);
+                userid = Number(userid);
 
-                if (typeof(userid) === 'number') {
+                if (userid.toString() !== 'NaN') {
                     console.log(userid);
                     Cookies.set('userID', userid.toString());
                     $('#userid').text(`${userid}`);
@@ -42,6 +44,7 @@ $(document).ready(function(){
 
     function display(){
         let data = JSON.parse(localStorage.getItem('todo')) || [];
+        console.log(data);
         if(data.length) {
            render(data);
            todoList = data;
@@ -89,7 +92,7 @@ function makeRequest() {
         data: {todo: test},
 
         success: function(data) {
-            todoList.push(test);
+            todoList[0][data] = "false";
             localStorage.setItem('todo', JSON.stringify(todoList));
             result.append(`<li>
                               <input type="checkbox" onclick="selMultiple(this)">
@@ -104,9 +107,9 @@ function makeRequest() {
 
 
 function render(data) {
-    data = JSON.parse(data);
-    for(let prop in data) {
-        if (prop === "user" || prop === "_id" || !Object.hasOwnProperty(prop)) {
+    console.log(data);
+    for(let prop in data[0]) {
+        if (prop === "user" || prop === "_id" || !data[0].hasOwnProperty(prop)) {
             continue;
         }
         result.append(`<li>
@@ -131,15 +134,19 @@ function render(data) {
 
 function deleteKey(element) {
     let index = $(element).parent().index();
-    let task = todoList[index].task;
+    let task = $(element).prev().text();
+    console.log(task);
 
     $.ajax({
         url: '/delete',
         method: 'post',
-        data: {task: task},
+        data: {todo: task},
         success: function() {
             $(element).parent().remove();
-            todoList.splice(index, 1);
+            console.log(index);
+            console.log(todoList);
+            console.log(todoList[0][task]);
+            delete todoList[0][task];
             localStorage.setItem('todo', JSON.stringify(todoList));
         }
     })
@@ -162,8 +169,11 @@ function updateKey(element) {
 
     let parent = $(element).parent();
     let index = parent.index();
-    let prevVal = todoList[index].task;
+    let prevVal = $(element).prev().prev().text();
     let newVal = prompt('Enter New Value');
+    if (!newVal) {
+        return;
+    }
     $.ajax({
         url: '/update',
         method: 'post',
@@ -173,7 +183,8 @@ function updateKey(element) {
                          <span>${data}</span>
                          <button class="updDel" onclick="deleteKey(this)"><img src="baseline-delete-24px.svg"></button>
                          <button class="updDel" onclick="updateKey(this)"><img src="baseline-edit-24px.svg"></button>`);
-            todoList[index].task = data;
+            delete todoList[0][prevVal];
+            todoList[0][newVal] = false;
             localStorage.setItem('todo', JSON.stringify(todoList));
         }
     })
@@ -181,10 +192,6 @@ function updateKey(element) {
 
 
 function deleteMultiple() {
-    let taskArr = [];
-    for (let i = 0; i < delMul.length; i++) {
-        taskArr.push(todoList[delMul[i]].task);
-    }
     console.log(taskArr);
     $.ajax ({
         url: '/deleteMultiple',
@@ -193,12 +200,12 @@ function deleteMultiple() {
         success: function(data) {
             delMul.sort();
             delMul.reverse();
-            delMul.forEach(function(ind) {
-                $('#list').children().eq(ind).remove();
-                todoList.splice(ind, 1);
-            });
+            for (let i = 0; i < delMul.length; i++) {
+                $('#list').children().eq(delMul[i]).remove();
+                delete todoList[taskArr[i]];
+            }
             localStorage.setItem('todo', JSON.stringify(todoList));
-            delMul = [];
+            delMul = taskArr = [];
         }
     });
 }
@@ -211,11 +218,13 @@ function selMultiple(element) {
         for (let i = 0; i < delMul.length; i++) {
             if (delMul[i] === index) {
                 delMul.splice(i, 1);
+                taskArr.splice(i, 1);
             }
         }
     }
     else {
         delMul.push(index);
+        taskArr.push($(element).next().text());
     }
 }
 

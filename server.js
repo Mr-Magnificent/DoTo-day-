@@ -37,7 +37,7 @@ app.use(bodyParser.json());
 app.get('/newuser', function (req, res) {
     db.insertNewUser(++usercount);
     res.cookie("userID", usercount, {
-        expires: new Date(2147483647000), httpOnly: true
+        expires: new Date(2147483647000)
     });
     res.send(usercount.toString());
 });
@@ -48,7 +48,8 @@ app.get('/newuser', function (req, res) {
 app.post('/add', function(req,res) {
     let userID = req.cookies.userID;
     let todo = req.body.todo;
-    todo = JSON.parse(todo);
+    console.log(todo);
+    // todo = JSON.parse(todo);
     todo = todo.task;
     console.log(todo, "inside /add:  ", userID, "userID");
     let done = false;
@@ -62,8 +63,8 @@ app.post('/add', function(req,res) {
     *
     *
     * */
-    db.insertTodo(userID, todo, done, function () {
-        res.sendStatus(200);
+    db.insertTodo(userID, todo, done, function (data) {
+        res.send(data);
     });
 
 });
@@ -73,8 +74,8 @@ app.post('/add', function(req,res) {
 
 app.post('/delete', function(req,res){
     let userID = parseInt(req.cookies.userID);
-    let task = JSON.parse(req.body.todo);
-    task = task.task;
+    let task = (req.body.todo).toString();
+    // task = task.task;
     /*
     *
     * This deletes the index
@@ -127,13 +128,13 @@ app.post ('/update', function (req, res) {
 
 app.post ('/deleteMultiple', function (req, res) {
     let task = req.body.task;
-    let userID = req.cookies.userID;
+    let userID = parseInt(req.cookies.userID);
     console.log(task);
     db.deleteMul(userID, task);
     res.sendStatus(200);
 });
 
-app.listen(5000, function(req,res) {
+app.listen(5000, function() {
    console.log("Server running on port 5000");
    db.connectDb();
 });
