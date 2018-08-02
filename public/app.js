@@ -1,4 +1,4 @@
-let todoList;
+let todoList = [{}];
 let delMul = [];
 let taskArr = [];
 let result = $('#list');
@@ -20,6 +20,7 @@ $(document).ready(function(){
                         $('#userid').text(`${data}`);
                         // userID = data;
                         Cookies.set('userID', `${data}`);
+                        document.location.reload(true);
                     }
                 })
             }
