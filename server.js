@@ -6,6 +6,8 @@ let usercount = 0;
 
 const bodyParser = require('body-parser');
 
+const cookieParser = require('cookie-parser');
+
 /*
 *
 * This file creates the connection to the database
@@ -16,6 +18,7 @@ const db = require('./database');
 
 
 // parse application/x-www-form-urlencoded
+app.use(cookieParser());
 app.use('/',server.static('public'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,13 +39,19 @@ app.get('/newuser', function (req, res) {
     res.cookie("userID", usercount, {
         expires: new Date(2147483647000), httpOnly: true
     });
-    res.send(usercount);
+    res.send(usercount.toString());
 });
 
+
+
+
 app.post('/add', function(req,res) {
-    let todo = req.body.todo.task;
-    console.log(todo);
-    let done = true;
+    let userID = req.cookies.userID;
+    let todo = req.body.todo;
+    todo = JSON.parse(todo);
+    todo = todo.task;
+    console.log(todo, "inside /add:  ", userID, "userID");
+    let done = false;
 
     /*
     *
@@ -53,27 +62,32 @@ app.post('/add', function(req,res) {
     *
     *
     * */
-
-    db.add(todo, done, function (results) {
-        res.send(results.insertId.toString());
+    db.insertTodo(userID, todo, done, function () {
+        res.sendStatus(200);
     });
+
 });
 
-/*
-*
-*
-* */
+
+
+
 app.post('/delete', function(req,res){
-    let index = req.body.id;
+    let userID = parseInt(req.cookies.userID);
+    let task = JSON.parse(req.body.todo);
+    task = task.task;
     /*
     *
     * This deletes the index
     *
     *
     * */
-    db.deleteEle(index);
+    db.deleteElement(userID, task);
     res.sendStatus(200);
 });
+
+
+
+
 
 app.get('/display', function(req,res) {
     // Send TodoList Array to the client
@@ -84,26 +98,38 @@ app.get('/display', function(req,res) {
     * that calls the display () in the database.js
     *
     * */
-    db.display(function (data) {
+    let userId = parseInt(req.cookies.userID);
+    console.log(userId, "inside display");
+    db.retrieveAll(userId, function (data) {
+        console.log(data);
         res.send(data);
     })
 });
 
+
+
+
+
 app.post ('/update', function (req, res) {
-    let newval = req.body.val;
-    let ind = req.body.index;
+    let newval = req.body.val.toString();
+    let prevVal = req.body.prevVal.toString();
     let done = false;
+    let userID = parseInt(req.cookies.userID);
 
-
-    db.update(ind, newval, done, function () {
-        res.send(newval.toString());
+    db.updateElement(userID, prevVal, newval, function (data) {
+        res.send(data);
     })
 });
 
+
+
+
+
 app.post ('/deleteMultiple', function (req, res) {
-    let id = req.body.id;
-    console.log(id);
-    db.deleteMultiple(id);
+    let task = req.body.task;
+    let userID = req.cookies.userID;
+    console.log(task);
+    db.deleteMul(userID, task);
     res.sendStatus(200);
 });
 

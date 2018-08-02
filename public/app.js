@@ -1,12 +1,14 @@
-var todoList = [];
-var delMul = [];
+let todoList;
+let delMul = [];
 let result = $('#list');
 let inp = $('#inp');
+// let userID;
 // let ind = 0;
 $(document).ready(function(){
+
     (function () {
-        let temp = Cookies.get('userID');
-        if (!temp) {
+        userID = Cookies.get('userID');
+        if (!userID) {
             let res = prompt("Are you a new user (y/n)");
             if (res[0].toLowerCase() === 'y') {
                 $.ajax({
@@ -14,23 +16,28 @@ $(document).ready(function(){
                     method: 'get',
                     success: function (data) {
                         $('#userid').text(`${data}`);
+                        // userID = data;
+                        Cookies.set('userID', `${data}`);
                     }
                 })
             }
             else {
+                console.log("not a new user");
                 let userid;
                 while (!userid) {
                     userid = prompt("Enter you UserID");
                 }
+                userid = parseInt(userid);
 
-                if (userid) {
-                    Cookies.set('userID', userid);
+                if (typeof(userid) === 'number') {
+                    console.log(userid);
+                    Cookies.set('userID', userid.toString());
+                    $('#userid').text(`${userid}`);
                 }
             }
         }
     }());
 
-    // let btn = $('#btn');
     display();
 
     function display(){
@@ -53,6 +60,8 @@ $(document).ready(function(){
     }
 });
 
+
+
 function makeRequest() {
 
     let input = inp.val();
@@ -69,7 +78,6 @@ function makeRequest() {
 
     let test = {
         "task" : input,
-        "id": 5,
         "done": false
     };
 
@@ -81,12 +89,11 @@ function makeRequest() {
         data: {todo: test},
 
         success: function(data) {
-            test.id = data;
             todoList.push(test);
             localStorage.setItem('todo', JSON.stringify(todoList));
             result.append(`<li>
                               <input type="checkbox" onclick="selMultiple(this)">
-                              <span>${test.task}</span>
+                              <span>${data}</span>
                               <button class="updDel" onclick="deleteKey(this)"><img src="baseline-delete-24px.svg" ></button>
                               <button class="updDel" onclick="updateKey(this)"><img src="baseline-edit-24px.svg" ></button>
                               </li>`
@@ -97,14 +104,18 @@ function makeRequest() {
 
 
 function render(data) {
-    data.forEach(function(i){
+    data = JSON.parse(data);
+    for(let prop in data) {
+        if (prop === "user" || prop === "_id" || !Object.hasOwnProperty(prop)) {
+            continue;
+        }
         result.append(`<li>
                               <input type="checkbox" onclick="selMultiple(this)">
-                              <span>${i.task}</span>
+                              <span>${prop}</span>
                               <button class="updDel" onclick="deleteKey(this)"><img src="baseline-delete-24px.svg" ></button>
                               <button class="updDel" onclick="updateKey(this)"><img src="baseline-edit-24px.svg" ></button>
                               </li>`)
-    })
+    }
 }
 
 
@@ -120,14 +131,13 @@ function render(data) {
 
 function deleteKey(element) {
     let index = $(element).parent().index();
-    let ind = todoList[index].id;
+    let task = todoList[index].task;
 
     $.ajax({
         url: '/delete',
         method: 'post',
-        data: {id: ind},
+        data: {task: task},
         success: function() {
-
             $(element).parent().remove();
             todoList.splice(index, 1);
             localStorage.setItem('todo', JSON.stringify(todoList));
@@ -152,12 +162,12 @@ function updateKey(element) {
 
     let parent = $(element).parent();
     let index = parent.index();
-    let ind = todoList[index].id;
+    let prevVal = todoList[index].task;
     let newVal = prompt('Enter New Value');
     $.ajax({
         url: '/update',
         method: 'post',
-        data: {val: newVal, index: ind},
+        data: {val: newVal, prevVal: prevVal},
         success: function (data) {
             parent.html(`<input type="checkbox" onclick="selMultiple(this)">
                          <span>${data}</span>
@@ -171,15 +181,15 @@ function updateKey(element) {
 
 
 function deleteMultiple() {
-    let idArr = [];
+    let taskArr = [];
     for (let i = 0; i < delMul.length; i++) {
-        idArr.push(todoList[delMul[i]].id);
+        taskArr.push(todoList[delMul[i]].task);
     }
-    console.log(idArr);
+    console.log(taskArr);
     $.ajax ({
         url: '/deleteMultiple',
         method: 'POST',
-        data: {id: idArr},
+        data: {task: taskArr},
         success: function(data) {
             delMul.sort();
             delMul.reverse();
@@ -219,5 +229,3 @@ function selMultiple(element) {
 * }
  *
 * */
-
-
