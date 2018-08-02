@@ -37,6 +37,8 @@ $(document).ready(function(){
                     $('#userid').text(`${userid}`);
                 }
             }
+        } else {
+            $('#userid').text(`${userID}`);
         }
     }());
 

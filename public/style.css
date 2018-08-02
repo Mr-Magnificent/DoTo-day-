@@ -127,7 +127,7 @@ li:hover .updDel{
 }
 
 #userid {
-    color: red;
+    color: rgba(185, 255, 193, 0.92);
 }
 
 @media screen and (max-width: 636px) {

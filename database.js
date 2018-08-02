@@ -1,4 +1,5 @@
 const mongodb = require('mongodb').MongoClient;
+let topUser = require('mongodb').ObjectID("5b63484919df04139569136e");
 
 const uri = 'mongodb://localhost:27017';
 
@@ -33,6 +34,23 @@ function insertNewUser (userID) {
             userId: userID
         }
     });
+}
+
+function getUserTop (callback) {
+    collection.find({"_id" : topUser}).toArray(function (err, result) {
+        if (err) {
+            console.log(err);
+            throw err;
+        }
+        console.log(result);
+        incrementUserTop(result);
+        callback(result);
+    })
+}
+
+function incrementUserTop(data) {
+    data = parseInt(data[0]['userTop']);
+    collection.updateOne({"userTop": data}, {$set :{'userTop' : ++data}});
 }
 
 
@@ -82,5 +100,6 @@ module.exports = {
     deleteElement,
     deleteMul,
     updateElement,
-    connectDb
+    connectDb,
+    getUserTop
 };
