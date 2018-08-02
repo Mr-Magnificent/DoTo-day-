@@ -99,8 +99,8 @@ function makeRequest() {
             result.append(`<li>
                               <input type="checkbox" onclick="selMultiple(this)">
                               <span>${data}</span>
-                              <button class="updDel" onclick="deleteKey(this)"><img src="baseline-delete-24px.svg" ></button>
-                              <button class="updDel" onclick="updateKey(this)"><img src="baseline-edit-24px.svg" ></button>
+                              <button class="updDel" onclick="deleteKey(this)"><img src="https://cdn.rawgit.com/Mr-Magnificent/2aab55badc3bed98638aba4bdfa82c94/raw/208e6e149fe0872894031644c3caf4225e003f63/baseline-delete.svg" ></button>
+                              <button class="updDel" onclick="updateKey(this)"><img src="https://cdn.rawgit.com/Mr-Magnificent/2aab55badc3bed98638aba4bdfa82c94/raw/208e6e149fe0872894031644c3caf4225e003f63/edit.svg" ></button>
                               </li>`
             )
         }
@@ -117,8 +117,8 @@ function render(data) {
         result.append(`<li>
                               <input type="checkbox" onclick="selMultiple(this)">
                               <span>${prop}</span>
-                              <button class="updDel" onclick="deleteKey(this)"><img src="baseline-delete-24px.svg" ></button>
-                              <button class="updDel" onclick="updateKey(this)"><img src="baseline-edit-24px.svg" ></button>
+                              <button class="updDel" onclick="deleteKey(this)"><img src="https://cdn.rawgit.com/Mr-Magnificent/2aab55badc3bed98638aba4bdfa82c94/raw/208e6e149fe0872894031644c3caf4225e003f63/baseline-delete.svg" ></button>
+                              <button class="updDel" onclick="updateKey(this)"><img src="https://cdn.rawgit.com/Mr-Magnificent/2aab55badc3bed98638aba4bdfa82c94/raw/208e6e149fe0872894031644c3caf4225e003f63/edit.svg" ></button>
                               </li>`)
     }
 }
@@ -183,8 +183,8 @@ function updateKey(element) {
         success: function (data) {
             parent.html(`<input type="checkbox" onclick="selMultiple(this)">
                          <span>${data}</span>
-                         <button class="updDel" onclick="deleteKey(this)"><img src="baseline-delete-24px.svg"></button>
-                         <button class="updDel" onclick="updateKey(this)"><img src="baseline-edit-24px.svg"></button>`);
+                         <button class="updDel" onclick="deleteKey(this)"><img src="https://cdn.rawgit.com/Mr-Magnificent/2aab55badc3bed98638aba4bdfa82c94/raw/208e6e149fe0872894031644c3caf4225e003f63/baseline-delete.svg"></button>
+                         <button class="updDel" onclick="updateKey(this)"><img src="https://cdn.rawgit.com/Mr-Magnificent/2aab55badc3bed98638aba4bdfa82c94/raw/208e6e149fe0872894031644c3caf4225e003f63/edit.svg"></button>`);
             delete todoList[0][prevVal];
             todoList[0][newVal] = false;
             localStorage.setItem('todo', JSON.stringify(todoList));
