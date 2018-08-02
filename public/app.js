@@ -205,7 +205,7 @@ function deleteMultiple() {
             delMul.reverse();
             for (let i = 0; i < delMul.length; i++) {
                 $('#list').children().eq(delMul[i]).remove();
-                delete todoList[taskArr[i]];
+                delete todoList[0][taskArr[i]];
             }
             localStorage.setItem('todo', JSON.stringify(todoList));
             delMul = taskArr = [];
