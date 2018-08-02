@@ -1,7 +1,7 @@
 const mongodb = require('mongodb').MongoClient;
 let topUser = require('mongodb').ObjectID("5b637cfde7179a0733452cea");
 
-const uri = 'mongodb://ayush123:gUwkJ9bAZiyGdpYWdLN5@ds243931.mlab.com:43931/todo';
+const uri = 'YOUR_DATABASE_URI';
 
 let database;
 let collection;
